@@ -1,0 +1,94 @@
+{
+    "notFound": "Ничего не найдено",
+    "profile": {
+        "menu": {
+            "posts": "Мои объявления",
+            "messages": "Мои сообщения",
+            "createPost": "Подать объявление",
+            "favorites": "Избранное",
+            "settings": "Настройки"
+        },
+        "createPost": {
+            "briefDescriptionLabel": "Краткое описание: ",
+            "briefDescriptionPlaceholder": "Например, Щенок овчарки",
+            "categoryLabel": "Выберите категорию",
+            "addPhoto": "Добавить фото",
+            "description": "Текст объявления",
+            "price": "Цена",
+            "telPlaceholder": "+375(XX)-XXX-XXXX",
+            "telLabel": "Телефон",
+            "additionaltelLabel": "Дополнительный телефон",
+            "locationLabel": "Местоположение",
+            "enterYourCity": "Укажите ваш город",
+            "saveСhanges": "Сохранить изменения",
+            "addPost": "Добавить объявление",
+            "add" : "Добавить",
+            "remove": "Удалить"
+        },
+        "settings": {
+            "personalDataAndLocation": "Персональные данные и местоположение",
+            "name": "Имя",
+            "region": "Область",
+            "city": "Город",
+            "contactInformation": "Информация для связи",
+            "contactNumbers": "Укажите контактные телефоны для связи с Вами",
+            "yourPhoneNumber": "Ваш телефон",
+            "additionalNumber": "Дополнительный номер",
+            "saveChanges": "Сохранить изменения",
+            "email": "E-mail"
+        }
+    },
+    "header": {
+        "title": "Pets",
+        "logOut": "Выйти",
+        "logIn": "Вход",
+        "registration": "Регистрация",
+        "search": "Поиск..."
+    },
+    "filter": {
+        "region": "Область",
+        "any": "Любая",
+        "reset": "Сбросить",
+        "apply": "Применить",
+        "category": "Категория"
+    },
+    "login": {
+        "title": "Вход",
+        "logIn": "Войти",
+        "registration": "Зарегистрироваться",
+        "email": "E-mail",
+        "password": "Пароль"
+    },
+    "registration": {
+        "title": "Регистрация",
+        "invalidEmail": "Неверный формат E-mail",
+        "shortPasswordError": "Пароль должен содержать минимум 6 символов",
+        "PasswordsDontMatch": "Пароли не совпадают",
+        "noAvatarSelected": "Аватар не выбран",
+        "email": "E-mail",
+        "password": "Пароль",
+        "name": "Имя",
+        "confirmPassword": "Повторите пароль",
+        "chooseAvatar": "Выбрать аватар",
+        "logIn": "Войти",
+        "isHasAccount": "Есть аккаунт?",
+        "fillFieldError": "Заполните поле"
+    },
+    "post": {
+        "city": "Город:",
+        "category": "Категория:",
+        "showPhoneNumber": "Показать номер",
+        "contactSeller": "Написать продавцу",
+        "description": "Описание :",
+        "views": "Просмотров :",
+        "price": "Цена: {{ price }} руб.",
+        "free": "Бесплатно",
+        "userIsNotAuthorized": "Только авторизованные пользователи могут добавить в 'Избранное'",
+        "filingDate": "Дата подачи :"
+    },
+    "userAvatarModal": {
+        "title": "Выберите аватар",
+        "cancel": "Отмена",
+        "select": "Выбрать"
+    }
+}

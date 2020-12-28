@@ -1,0 +1,16 @@
+.dropdown:hover>.avatarMenu {
+	display: block;
+}
+
+form {
+	justify-content: space-between;
+}
+
+.logo {
+	width: 1.5em;
+}
+
+.dropdownItem:hover, .listGroupItem:hover {
+	background: rgba(169, 177, 185, 0.877);
+	color: white;
+}

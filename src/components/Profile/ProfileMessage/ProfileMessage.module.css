@@ -1,0 +1,61 @@
+.messageField {
+    display: flex;
+    align-items: stretch; 
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+    height: 85vh;
+}
+
+.autor {
+    width: 30%;
+    border-right: 1px solid gray;
+    overflow: auto;
+}
+
+.autor li,
+.autor a {
+    text-decoration: none;
+    color: black;
+    list-style: none;
+
+}
+
+.message {
+    flex-basis: 70%;
+}
+
+.messageList {
+    overflow: auto;
+    height: 96%;
+}
+
+.messageText {
+    font-size: 14px;
+}
+
+.chat li {
+    max-width: 50%;
+    clear: both;
+}
+
+.autor .mediaBody {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(217, 225, 230, 0.9);
+}
+
+.mark {
+    background: rgba(85, 171, 252, 0.336);
+    border-radius: 10px;
+    padding: 0.7em;
+}
+
+/* .messageList {
+    background-image: url('https://img5.goodfon.ru/original/800x480/d/9e/listy-tekst-slova.jpg');
+} */

@@ -1,0 +1,10 @@
+.sticky {
+	position: sticky;
+	top: 70px;
+	z-index: 999;
+}
+
+.dropdownItem:hover {
+	background: rgba(169, 177, 185, 0.877);
+	color: white;
+}

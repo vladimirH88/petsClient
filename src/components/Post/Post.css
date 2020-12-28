@@ -1,0 +1,36 @@
+.description,
+.img,
+h4,
+.location {
+	margin-top: 0.5em;
+}
+
+.img {
+	width: 300px;
+	margin-left: 5px;
+	border: 1px solid rgba(116, 113, 113, 0.87);
+	box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+.additionalFoto img {
+	cursor: pointer;
+	margin-bottom: 4px;
+	min-height: 85px;
+	width: 97px;
+	box-shadow: 0 5px 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+.additionalFoto {
+	margin-left: 5px;
+	max-height: 280px;
+	overflow:auto;
+}
+
+.foto {
+	display: flex;
+}
+
+.main-foto {
+	border: 2px solid gray;
+	padding: 1px;
+}
