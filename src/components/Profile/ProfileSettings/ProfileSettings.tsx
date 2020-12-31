@@ -1,74 +1,88 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { region } from '../../../data/region';
+import { getRegionListAction } from '../../../redux/common/actions';
 import { Store, User, SelectItem } from '../../../interfaces';
-import { editUser } from '../../../redux/profile/actions';
-import { getUserSelector } from '../../../redux/common/selectors';
+import { editUserAction } from '../../../redux/profile/actions';
+import { getUserSelector, getRegionsSelector } from '../../../redux/common/selectors';
 
 type Props = {
     user: User | null;
+    regions: SelectItem[];
+    getRegionList: () => void;
     editUser: (user: User) => void;
 };
 
-const ProfileSettings: React.FC<Props> = ({ user, editUser }) => {
+const ProfileSettings: React.FC<Props> = ({ user, regions, editUser, getRegionList }) => {
     const { t } = useTranslation();
-    const [userData, setUserData] = useState(user ? user : {} as User);
+    const [userData, setUserData] = useState(user || ({} as User));
 
-    const renderSelectItems = (arr: SelectItem[]) => {
-        return arr.map(item =>
+    const renderSelectItems = (arr: SelectItem[]) =>
+        arr.map((item) => (
             <option key={item.id} value={item.value}>
                 {item.name}
             </option>
-        );
-    };
+        ));
 
-    const inputHandler = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setUserData({
-            ...userData,
-            [e.target.name]: e.target.value,
-        });
-    }, [userData, setUserData]);
+    const inputHandler = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+            setUserData({
+                ...userData,
+                [e.target.name]: e.target.value,
+            });
+        },
+        [userData, setUserData],
+    );
 
     const editUserHandler = useCallback(() => {
         editUser(userData);
-
     }, [userData, editUser]);
+
+    useEffect(() => {
+        getRegionList();
+    }, [getRegionList]);
 
     return (
         <main>
             <div className="card m-4 p-1 w-75 mx-auto shadow">
                 <div className="card-body">
-                    <div className="card-title h5 text-center">
-                        {t('profile.settings.personalDataAndLocation')}
-                    </div>
+                    <div className="card-title h5 text-center">{t('profile.settings.personalDataAndLocation')}</div>
                     <div>
                         <fieldset className="form-group">
                             <label htmlFor="email">
                                 {t('profile.settings.email')}
-                                <span className="text-danger">
-                                    *
-                                </span>
+                                <span className="text-danger">*</span>
                             </label>
-                            <input type="email" name="email" className="form-control" placeholder={t('profile.settings.email')} value={userData?.email} onChange={inputHandler} />
+                            <input
+                                type="email"
+                                name="email"
+                                className="form-control"
+                                placeholder={t('profile.settings.email')}
+                                value={userData?.email}
+                                onChange={inputHandler}
+                            />
                         </fieldset>
                         <fieldset className="form-group">
                             <label htmlFor="name">
                                 {t('profile.settings.name')}
-                                <span className="text-danger">
-                                    *
-                                </span>
+                                <span className="text-danger">*</span>
                             </label>
-                            <input className="form-control" type="text" placeholder="Имя" id="name" name="name" value={userData?.name} onChange={inputHandler} />
+                            <input
+                                className="form-control"
+                                type="text"
+                                placeholder="Имя"
+                                id="name"
+                                name="name"
+                                value={userData?.name}
+                                onChange={inputHandler}
+                            />
                         </fieldset>
 
                         <fieldset className="form-group">
                             <label htmlFor="region">
                                 {t('profile.settings.region')}
-                                <span className="text-danger">
-                                    *
-                                </span>
+                                <span className="text-danger">*</span>
                             </label>
                             <select
                                 className="form-control"
@@ -78,19 +92,27 @@ const ProfileSettings: React.FC<Props> = ({ user, editUser }) => {
                                 value={userData?.region}
                                 onChange={inputHandler}
                             >
-                                <option value="" disabled>{t('profile.settings.region')}</option>
-                                {renderSelectItems(region)}
+                                <option value="" disabled>
+                                    {t('profile.settings.region')}
+                                </option>
+                                {renderSelectItems(regions)}
                             </select>
                         </fieldset>
 
                         <fieldset className="form-group">
                             <label htmlFor="city">
                                 {t('profile.settings.city')}
-                                <span className="text-danger">
-                                    *
-                                    </span>
+                                <span className="text-danger">*</span>
                             </label>
-                            <input className="form-control" type="text" placeholder="Город" id="city" name="city" value={userData.city} onChange={inputHandler} />
+                            <input
+                                className="form-control"
+                                type="text"
+                                placeholder="Город"
+                                id="city"
+                                name="city"
+                                value={userData.city}
+                                onChange={inputHandler}
+                            />
                         </fieldset>
                     </div>
                 </div>
@@ -98,18 +120,12 @@ const ProfileSettings: React.FC<Props> = ({ user, editUser }) => {
 
             <div className="card m-2 p-1 w-75 mx-auto shadow">
                 <div className="card-body">
-                    <div className="card-title text-center h5">
-                        {t('profile.settings.contactInformation')}
-                    </div>
-                    <p className="card-text text-center">
-                        {t('profile.settings.contactNumbers')}
-                    </p>
+                    <div className="card-title text-center h5">{t('profile.settings.contactInformation')}</div>
+                    <p className="card-text text-center">{t('profile.settings.contactNumbers')}</p>
                     <fieldset className="form-group">
                         <label htmlFor="phone">
                             {t('profile.settings.yourPhoneNumber')}
-                            <span className="text-danger">
-                                *
-                            </span>
+                            <span className="text-danger">*</span>
                         </label>
                         <input
                             className="form-control"
@@ -125,9 +141,7 @@ const ProfileSettings: React.FC<Props> = ({ user, editUser }) => {
 
                     <div className="collapse" id="collapsePhone">
                         <fieldset className="form-group">
-                            <label htmlFor="phone">
-                                {t('profile.settings.additionalNumber')}
-                            </label>
+                            <label htmlFor="phone">{t('profile.settings.additionalNumber')}</label>
                             <input
                                 className="form-control"
                                 type="tel"
@@ -141,22 +155,20 @@ const ProfileSettings: React.FC<Props> = ({ user, editUser }) => {
                         </fieldset>
                     </div>
                     <button
+                        type="button"
                         className="btn btn-sm btn-primary ml-2"
                         data-toggle="collapse"
                         data-target="#collapsePhone"
                         aria-expanded="false"
                         aria-controls="collapsePhone"
                     >
-                        <i className="fa fa-plus mr-1"></i>
+                        <i className="fa fa-plus mr-1" />
                     </button>
                 </div>
             </div>
 
             <fieldset className="form-group w-50 mx-auto">
-                <button
-                    className="form-control btn btn-outline-success mt-4"
-                    onClick={editUserHandler}
-                >
+                <button type="button" className="form-control btn btn-outline-success mt-4" onClick={editUserHandler}>
                     {t('profile.settings.saveChanges')}
                 </button>
             </fieldset>
@@ -164,14 +176,14 @@ const ProfileSettings: React.FC<Props> = ({ user, editUser }) => {
     );
 };
 
-const mapStateToProps = (store: Store) => {
-    return {
-        user: getUserSelector(store),
-    }
-};
+const mapStateToProps = (store: Store) => ({
+    user: getUserSelector(store),
+    regions: getRegionsSelector(store),
+});
 
 const mapDispatchToProps = {
-    editUser,
+    editUser: editUserAction,
+    getRegionList: getRegionListAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileSettings);

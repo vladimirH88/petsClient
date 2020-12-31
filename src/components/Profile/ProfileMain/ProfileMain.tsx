@@ -8,22 +8,25 @@ import ProfileCreatePost from '../ProfileCreatePost/ProfileCreatePost';
 import ProfileMessage from '../ProfileMessage/ProfileMessage';
 import ProfileSettings from '../ProfileSettings/ProfileSettings';
 
-import { ProfilePage } from '../../../enums/ProfilePage';
+import ProfilePage from '../../../enums/ProfilePage';
 import { Post, Store, User } from '../../../interfaces';
 import { getUserSelector } from '../../../redux/common/selectors';
-import { getProfilePosts, getFavoritesPosts, removePostFromFavorites, setEditingPost, deletePost } from '../../../redux/profile/actions';
-import { getCurrentProfilePage, getProfilePostsSelector, geFavoritesPostsSelector } from '../../../redux/profile/selectors';
+import { getProfilePostsAction, getFavoritesPostsAction, setEditingPostAction } from '../../../redux/profile/actions';
+import {
+    getCurrentProfilePage,
+    getProfilePostsSelector,
+    geFavoritesPostsSelector,
+} from '../../../redux/profile/selectors';
 
 type Props = {
     user: User | null;
     posts: Post[];
     favoritesPosts: Post[];
-    currentPage: ProfilePage,
+    currentPage: ProfilePage;
     deletePost: (id: number) => void;
     setEditingPost: (post: Post) => void;
-    getProfilePosts: () => void;
+    getProfilePosts: (isActive: boolean) => void;
     getFavoritesPosts: () => void;
-    removePostFromFavorites?: (postId: number) => void;
 };
 
 const ProfileMain: React.FC<Props> = ({
@@ -35,45 +38,29 @@ const ProfileMain: React.FC<Props> = ({
     setEditingPost,
     getProfilePosts,
     getFavoritesPosts,
-    removePostFromFavorites
 }) => {
-
     const currentPageRender = useMemo(() => {
         switch (currentPage) {
             case ProfilePage.POST_LIST: {
-                return (
-                    <ProfilePostList
-                        posts={posts}
-                        deletePost={deletePost}
-                        getPosts={getProfilePosts}
-                        setEditingPost={setEditingPost}
-                    />
-                )
+                return <ProfilePostList posts={posts} getPosts={getProfilePosts} setEditingPost={setEditingPost} />;
             }
             case ProfilePage.MESSAGES: {
-                return <ProfileMessage />
+                return <ProfileMessage />;
             }
             case ProfilePage.CREATE_POST: {
-                return <ProfileCreatePost />
+                return <ProfileCreatePost />;
             }
             case ProfilePage.FAVORITES: {
-                return (
-                    <ProfilePostList
-                        isFavorites={true}
-                        posts={favoritesPosts}
-                        getPosts={getFavoritesPosts}
-                        removeFromFavorites={removePostFromFavorites}
-                    />
-                )
+                return <ProfilePostList user={user} isFavorites posts={favoritesPosts} getPosts={getFavoritesPosts} />;
             }
             case ProfilePage.SETTINGS: {
-                return <ProfileSettings />
+                return <ProfileSettings />;
             }
             default: {
-                return <></>
+                return <></>;
             }
         }
-    }, [posts, favoritesPosts, currentPage, getProfilePosts]);
+    }, [user, posts, favoritesPosts, currentPage, getFavoritesPosts, getProfilePosts, setEditingPost]);
 
     useEffect(() => {
         if (!user) {
@@ -88,29 +75,23 @@ const ProfileMain: React.FC<Props> = ({
                 <div className="col-md-3">
                     <ProfileMenu />
                 </div>
-                <div className="col-md-8 mt-4 pt-3">
-                    {currentPageRender}
-                </div>
+                <div className="col-md-8 mt-4 pt-3">{currentPageRender}</div>
             </div>
         </>
     );
 };
 
-const mapStateToProps = (store: Store) => {
-    return {
-        user: getUserSelector(store),
-        posts: getProfilePostsSelector(store),
-        currentPage: getCurrentProfilePage(store),
-        favoritesPosts: geFavoritesPostsSelector(store),
-    }
-};
+const mapStateToProps = (store: Store) => ({
+    user: getUserSelector(store),
+    posts: getProfilePostsSelector(store),
+    currentPage: getCurrentProfilePage(store),
+    favoritesPosts: geFavoritesPostsSelector(store),
+});
 
 const mapDispatchToProps = {
-    setEditingPost,
-    getProfilePosts,
-    deletePost,
-    getFavoritesPosts,
-    removePostFromFavorites,
+    setEditingPost: setEditingPostAction,
+    getProfilePosts: getProfilePostsAction,
+    getFavoritesPosts: getFavoritesPostsAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileMain);

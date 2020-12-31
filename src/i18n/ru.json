@@ -22,7 +22,7 @@
             "enterYourCity": "Укажите ваш город",
             "saveСhanges": "Сохранить изменения",
             "addPost": "Добавить объявление",
-            "add" : "Добавить",
+            "add": "Добавить",
             "remove": "Удалить"
         },
         "settings": {
@@ -36,6 +36,10 @@
             "additionalNumber": "Дополнительный номер",
             "saveChanges": "Сохранить изменения",
             "email": "E-mail"
+        },
+        "postList" : {
+            "published" : "Опубликованные",
+            "moderation" : "На модерации"
         }
     },
     "header": {
@@ -72,7 +76,8 @@
         "chooseAvatar": "Выбрать аватар",
         "logIn": "Войти",
         "isHasAccount": "Есть аккаунт?",
-        "fillFieldError": "Заполните поле"
+        "fillFieldError": "Заполните поле",
+        "regisrtNow": "Зарегистрироваться"
     },
     "post": {
         "city": "Город:",

@@ -1,44 +1,85 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
+import { removeFromFavorites, deletePostById } from '../../../api/postsApi';
 import ProfilePost from '../ProfilePost/ProfilePost';
-import { Post } from '../../../interfaces';
+import { Post, User } from '../../../interfaces';
+import ROUTES from '../../../constants/routes';
 
 type Props = {
+    user?: User | null;
     posts: Post[];
     isFavorites?: boolean;
-    getPosts: () => void;
-    deletePost?: (id: number) => void;
+    getPosts: (isActive: boolean) => void;
     setEditingPost?: (post: Post) => void;
-    removeFromFavorites?: (postId: number) => void;
 };
 
-const ProfilePostList: React.FC<Props> = ({ posts, isFavorites = false, getPosts, deletePost, setEditingPost, removeFromFavorites }) => {
+enum activeTabs {
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
+
+const ProfilePostList: React.FC<Props> = ({ user, posts, isFavorites = false, getPosts, setEditingPost }) => {
     const { t } = useTranslation();
+    const [activeTab, setActiveTab] = useState(activeTabs.ACTIVE);
+
+    const onRemoveFromFavorites = useCallback(
+        (postId: number) => {
+            if (user) {
+                void removeFromFavorites(user.id, postId);
+            }
+        },
+        [user],
+    );
 
     useEffect(() => {
-        getPosts();
-    }, [getPosts]);
+        if (activeTab === activeTabs.ACTIVE) {
+            getPosts(true);
+            return;
+        }
+        getPosts(false);
+    }, [activeTab, getPosts]);
 
     return (
         <>
+            {!isFavorites ? (
+                <div className="d-flex justify-content-center">
+                    <div className="btn-group" role="group">
+                        <button
+                            type="button"
+                            className={`btn btn-secondary ${activeTab === activeTabs.ACTIVE ? 'active' : ''}`}
+                            onClick={() => setActiveTab(activeTabs.ACTIVE)}
+                        >
+                            {t('profile.postList.published')}
+                        </button>
+                        <button
+                            type="button"
+                            className={`btn btn-secondary ${activeTab === activeTabs.INACTIVE ? 'active' : ''}`}
+                            onClick={() => setActiveTab(activeTabs.INACTIVE)}
+                        >
+                            {t('profile.postList.moderation')}
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                    <></>
+                )}
             {posts.length ? (
-                posts.map(post => (
-                    <Link className="list-group-item-action" to="#" key={post.id}>
+                posts.map((post) => (
+                    <Link className="list-group-item-action" to={ROUTES.PROFILE} key={post.id}>
                         <ProfilePost
                             post={post}
                             isFavorite={isFavorites}
-                            removeFromFavorites={removeFromFavorites}
+                            onRemoveFromFavorites={onRemoveFromFavorites}
                             setEditingPost={setEditingPost}
-                            deletePost={deletePost}
+                            deletePost={deletePostById}
                         />
                     </Link>
                 ))
             ) : (
                     <h2>{t('notFound')}</h2>
-                )
-            }
+                )}
         </>
     );
 };

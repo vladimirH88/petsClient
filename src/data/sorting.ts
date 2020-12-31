@@ -1,6 +1,6 @@
 import { SortDirection, SortParam } from '../enums/Sorting';
 
-export const sortingParamsList = [
+const sortingParamsList = [
     {
         id: '1',
         name: 'Cначала новые',
@@ -33,4 +33,6 @@ export const sortingParamsList = [
             direction: SortDirection.DESC,
         },
     },
-]
+];
+
+export default sortingParamsList;

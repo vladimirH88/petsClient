@@ -2,31 +2,68 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
-import { ProfilePage } from '../../../enums/ProfilePage';
+import ProfilePage from '../../../enums/ProfilePage';
 import { geEditingPostsSelector } from '../../../redux/profile/selectors';
-import { region } from '../../../data/region';
-import { category } from '../../../data/category';
 import { SelectItem, Store, Post, User } from '../../../interfaces';
-import { getUserSelector } from '../../../redux/common/selectors';
-import { createPost, setCurrentProfilePage, editPost, setEditingPost } from '../../../redux/profile/actions';
+import { getCategoryListAction, getRegionListAction } from '../../../redux/common/actions';
+import { getUserSelector, getCategoriesSelector, getRegionsSelector } from '../../../redux/common/selectors';
+import { setCurrentProfilePageAction, setEditingPostAction } from '../../../redux/profile/actions';
+
+import { createNewPost, editPost } from '../../../api/postsApi';
 
 type Props = {
-    user: User | null,
+    user: User | null;
+    regions: SelectItem[];
+    categories: SelectItem[];
     editingPost: Post | null;
-    editPost: (post: any) => void;
-    createPost: (post: any) => void;
+    getRegionList: () => void;
+    getCategoryList: () => void;
     setEditingPost: (data: Post | null) => void;
     setCurrentProfilePage: (page: ProfilePage) => void;
 };
 
-const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, createPost, setEditingPost }) => {
+const ProfileCreatePost: React.FC<Props> = ({
+    user,
+    editingPost,
+    categories,
+    regions,
+    getRegionList,
+    getCategoryList,
+    setEditingPost,
+    setCurrentProfilePage,
+}) => {
+    const defaultFormValue = {
+        createrId: user && user.id,
+        briefDescription: '',
+        category: '',
+        description: '',
+        price: '',
+        phone: user && user.phoneNumber ? user.phoneNumber : '',
+        additionalPhone: user && user.additionalPhoneNumber ? user.additionalPhoneNumber : '',
+        region: user && user.region ? user.region : '',
+        city: user && user.city ? user.city : '',
+        filingDate: new Date(),
+        image: '',
+    };
+
     const { t } = useTranslation();
     const [isShowAdditionalPhone, setIsShowAdditionalPhone] = useState(!!user && !!user.additionalPhoneNumber);
+    const [formData, setFormData] = useState<Post | typeof defaultFormValue>(defaultFormValue);
+    const [previewImage, setPreviewImage] = useState<string | ArrayBuffer | null>('');
 
     const showAdditionalPhoneHandler = useCallback(() => {
-        setIsShowAdditionalPhone(!isShowAdditionalPhone)
+        setIsShowAdditionalPhone(!isShowAdditionalPhone);
     }, [isShowAdditionalPhone, setIsShowAdditionalPhone]);
-    
+
+    const inputHandler = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+            setFormData({
+                ...formData,
+                [e.target.name]: e.target.value,
+            });
+        },
+        [formData, setFormData],
+    );
 
     const renderAdditionalPhoneInput = () => {
         if (isShowAdditionalPhone) {
@@ -45,52 +82,27 @@ const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, creat
             );
         }
         return <></>;
-    }
-
-    const initialFormData: Post = {
-        id: 0,
-        createrId: user!.id,
-        briefDescription: '',
-        category: '',
-        description: '',
-        price: '',
-        phone: user && user.phoneNumber ? user.phoneNumber : '',
-        additionalPhone: user && user.additionalPhoneNumber ? user.additionalPhoneNumber : '',
-        region: user && user.region ? user.region : '',
-        city: user && user.city ? user.city : '',
-        filingDate: new Date(),
-        numberOfViews: 0,
-        image: '',
     };
 
-    const [formData, setFormData] = useState(initialFormData);
-    const [previewImage, setPreviewImage] = useState<string | ArrayBuffer | null>('');
+    const submitHandler = useCallback(
+        (e: React.MouseEvent<HTMLInputElement, MouseEvent>): void => {
+            e.preventDefault();
+            if (editingPost) {
+                editPost(formData as Post);
+            } else {
+                createNewPost(formData as Post);
+            }
+            setCurrentProfilePage(ProfilePage.POST_LIST);
+        },
+        [editingPost, formData],
+    );
 
-    const inputHandler = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    }, [formData, setFormData]);
-
-    const submitHandler = useCallback((e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-        e.preventDefault();
-        if (editingPost) {
-            editPost(formData);
-        } else {
-            const { id, ...post } = formData;
-            createPost(post);
-        }
-        setCurrentProfilePage(ProfilePage.POST_LIST);
-    }, [editingPost, editPost, formData, createPost, setCurrentProfilePage]);
-
-    const renderSelectItems = (arr: SelectItem[]) => {
-        return arr.map(item =>
+    const renderSelectItems = (arr: SelectItem[]) =>
+        arr.map((item) => (
             <option key={item.id} value={item.value}>
                 {item.name}
             </option>
-        );
-    };
+        ));
 
     const previewImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files![0];
@@ -104,21 +116,22 @@ const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, creat
                 ...formData,
                 image: objectURL,
             });
-        }
+        };
         if (file) {
             reader.readAsDataURL(file);
-
         } else {
             setPreviewImage('');
         }
     };
 
     useEffect(() => {
+        getRegionList();
+        getCategoryList();
         if (editingPost) {
-            setFormData(editingPost)
+            setFormData(editingPost);
         }
-        return () => setEditingPost(null)
-    }, [editingPost, setEditingPost]);
+        return () => setEditingPost(null);
+    }, [editingPost, getRegionList, getCategoryList, setEditingPost]);
 
     return (
         <>
@@ -139,27 +152,40 @@ const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, creat
                 </fieldset>
 
                 <fieldset className="form-group">
-                    <label>{t('profile.createPost.categoryLabel')}</label>
+                    <label htmlFor="category">{t('profile.createPost.categoryLabel')}</label>
                     <select
+                        id="category"
                         className="selectpicker form-control"
                         name="category"
                         value={formData.category}
                         onChange={inputHandler}
                     >
-                        <option value="" disabled>{t('profile.createPost.categoryLabel')}</option>
-                        {renderSelectItems(category)}
+                        <option value="" disabled>
+                            {t('profile.createPost.categoryLabel')}
+                        </option>
+                        {renderSelectItems(categories)}
                     </select>
                 </fieldset>
                 <fieldset className="form-group">
-                    <label>{t('profile.createPost.addPhoto')}</label>
+                    <label htmlFor="image">{t('profile.createPost.addPhoto')}</label>
                     <input
+                        id="image"
                         className="form-control-file"
                         type="file"
                         name="image"
                         accept="image/*,image/jpeg"
                         onChange={previewImageHandler}
                     />
-                    {previewImage ? <img style={{ width: '120px' }} className="p-2" src={previewImage as string} alt="previewImage" /> : <></>}
+                    {previewImage ? (
+                        <img
+                            style={{ width: '120px' }}
+                            className="p-2"
+                            src={previewImage as string}
+                            alt="previewImage"
+                        />
+                    ) : (
+                        <></>
+                    )}
                 </fieldset>
                 <fieldset className="form-group">
                     <textarea
@@ -172,8 +198,7 @@ const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, creat
                         required
                         value={formData.description}
                         onChange={inputHandler}
-                    >
-                    </textarea>
+                    />
                 </fieldset>
 
                 <fieldset className="form-group">
@@ -204,7 +229,13 @@ const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, creat
                 </fieldset>
                 <label htmlFor="additionalPhone">
                     {t('profile.createPost.additionaltelLabel')}
-                    <span className="h5 text-primary ml-3" style={{ cursor: 'pointer' }} onClick={showAdditionalPhoneHandler}>
+                    <span
+                        role="button"
+                        tabIndex={0}
+                        className="h5 text-primary ml-3"
+                        style={{ cursor: 'pointer' }}
+                        onClick={showAdditionalPhoneHandler}
+                    >
                         {isShowAdditionalPhone ? t('profile.createPost.remove') : t('profile.createPost.add')}
                     </span>
                 </label>
@@ -221,8 +252,10 @@ const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, creat
                         required
                         onChange={inputHandler}
                     >
-                        <option value="" disabled>{t('profile.createPost.locationLabel')}</option>
-                        {renderSelectItems(region)}
+                        <option value="" disabled>
+                            {t('profile.createPost.locationLabel')}
+                        </option>
+                        {renderSelectItems(regions)}
                     </select>
                 </fieldset>
 
@@ -251,18 +284,18 @@ const ProfileCreatePost: React.FC<Props> = ({ user, editingPost, editPost, creat
     );
 };
 
-const mapStateToProps = (store: Store) => {
-    return {
-        user: getUserSelector(store),
-        editingPost: geEditingPostsSelector(store),
-    };
-};
+const mapStateToProps = (store: Store) => ({
+    user: getUserSelector(store),
+    regions: getRegionsSelector(store),
+    categories: getCategoriesSelector(store),
+    editingPost: geEditingPostsSelector(store),
+});
 
 const mapDispatchToProps = {
-    createPost,
-    setCurrentProfilePage,
-    editPost,
-    setEditingPost,
+    getRegionList: getRegionListAction,
+    setEditingPost: setEditingPostAction,
+    getCategoryList: getCategoryListAction,
+    setCurrentProfilePage: setCurrentProfilePageAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileCreatePost);

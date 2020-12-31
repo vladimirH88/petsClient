@@ -2,26 +2,22 @@ import axios from 'axios';
 import { User } from '../interfaces';
 import { LOG_IN, LOG_OUT, REGISTRATION, REFRESH_TOKEN } from '../constants/apiConstants';
 
-export const logIn = (email: string, password: string) => {
-    return axios.post(LOG_IN, { email, password });
-};
+export const logIn = (email: string, password: string) => axios.post(LOG_IN, { email, password });
 
-export const logOut = () => {
-    return axios.get(LOG_OUT);
-};
+export const logOut = () => axios.get(LOG_OUT);
 
-export const registration = (user: User) => {
-    return axios.post(REGISTRATION, user);
-};
+export const registration = (user: User) => axios.post(REGISTRATION, user);
 
 axios.interceptors.request.use(
     (response) => {
         if (localStorage.getItem('accessToken')) {
+            const user: User = JSON.parse(localStorage.getItem('user') ?? '');
             response.headers = {
                 'Content-Type': 'application/json',
-                'authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'user-id': JSON.parse(localStorage.getItem('user') ?? '').id,
-                'refresh': localStorage.getItem('refreshToken'),
+                authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                'x-user-id': user && user.id,
+                'x-user-role': user && user.role,
+                refresh: localStorage.getItem('refreshToken'),
             };
         }
         return response;
@@ -32,9 +28,7 @@ axios.interceptors.request.use(
 );
 
 axios.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     (error) => {
         const originRequest = error.config;
         const status = error.response ? error.response.status : null;
@@ -43,9 +37,8 @@ axios.interceptors.response.use(
                 .post(REFRESH_TOKEN, { refreshToken: localStorage.getItem('refreshToken') })
                 .then((res) => {
                     if (res.headers) {
-                        // const newToken = res.headers['access-token'] ?? '';
-                        const newToken = res.data.data.accessToken ?? '';
-                        const newRefreshToken = res.data.data.refreshToken ?? '';
+                        const newToken = res.data.accessToken ?? '';
+                        const newRefreshToken = res.data.refreshToken ?? '';
                         const oldToken = localStorage.getItem('accessToken');
                         if (newToken !== oldToken) {
                             localStorage.setItem('accessToken', newToken);
@@ -55,10 +48,9 @@ axios.interceptors.response.use(
                     }
                     return Promise.reject(error);
                 })
-                .catch((error) => {
+                .catch(() => {
                     localStorage.clear();
                     window.location.reload();
-                    console.log(error);
                 });
         }
         throw error;

@@ -1,4 +1,4 @@
-import { LimitItemsPerPage } from '../../enums/LimitItemsPerPage';
+import LimitItemsPerPage from '../../enums/LimitItemsPerPage';
 import { SortParam, SortDirection } from '../../enums/Sorting';
 import { Filter, Sorting } from '../../interfaces';
 
@@ -14,7 +14,7 @@ const initialSorting: Sorting = {
     direction: SortDirection.DESC,
 };
 
-export const store = {
+const store = {
     post: null,
     user: user ? JSON.parse(user) : null,
     postListData: {
@@ -26,4 +26,8 @@ export const store = {
     filter: initialFilter,
     sorting: initialSorting,
     favotitePostIds: [],
+    categories: [],
+    regions: [],
 };
+
+export default store;

@@ -1,5 +1,6 @@
 export interface Post {
     id: number;
+    isAgreed: boolean;
     createrId: number;
     briefDescription: string;
     category: string;
@@ -11,5 +12,5 @@ export interface Post {
     city: string;
     filingDate: string | Date;
     numberOfViews: number;
-    image?: any
-};
+    image?: string;
+}

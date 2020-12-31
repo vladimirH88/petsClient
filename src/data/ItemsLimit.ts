@@ -1,6 +1,6 @@
-import { LimitItemsPerPage } from '../enums/LimitItemsPerPage';
+import LimitItemsPerPage from '../enums/LimitItemsPerPage';
 
-export const itemsLimit = [
+const itemsLimit = [
     {
         id: '1',
         name: '10',
@@ -22,3 +22,5 @@ export const itemsLimit = [
         value: LimitItemsPerPage.L75,
     },
 ];
+
+export default itemsLimit;

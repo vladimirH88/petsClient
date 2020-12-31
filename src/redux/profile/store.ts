@@ -1,9 +1,11 @@
-import { ProfilePage } from '../../enums/ProfilePage';
+import ProfilePage from '../../enums/ProfilePage';
 
-export const store = {
+const store = {
     post: null,
     editingPost: null,
     postList: [],
     favoritesPosts: [],
     profileCurrentPage: ProfilePage.POST_LIST,
 };
+
+export default store;

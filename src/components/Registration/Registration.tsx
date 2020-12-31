@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
+import ROUTES from '../../constants/routes';
 import { User } from '../../interfaces';
-import { registr } from '../../redux/auth/actions';
+import { registrAction } from '../../redux/auth/actions';
 import s from './Registration.module.css';
 
 type FormData = {
@@ -42,16 +43,19 @@ const Registration: React.FC<Props> = ({ registr }) => {
 
     const { name, email, password, confirmPassword } = formData;
 
-    const inputHundler = useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
-        validateFormData = {
-            ...validateFormData,
-            [e.target.name]: false,
-        };
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    }, [formData, setFormData, validateFormData]);
+    const inputHundler = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>): void => {
+            validateFormData = {
+                ...validateFormData,
+                [e.target.name]: false,
+            };
+            setFormData({
+                ...formData,
+                [e.target.name]: e.target.value,
+            });
+        },
+        [formData, setFormData],
+    );
 
     const validate = (): boolean => {
         let isValid = true;
@@ -81,12 +85,12 @@ const Registration: React.FC<Props> = ({ registr }) => {
             validateFormData.confirmPassword = true;
         }
         return isValid;
-    }
+    };
 
     const submitClick = () => {
         if (validate()) {
-            registr(formData)
-        };
+            registr(formData);
+        }
     };
 
     return (
@@ -97,49 +101,75 @@ const Registration: React.FC<Props> = ({ registr }) => {
                         <h2 className="text-center mb-4">{t('registration.title')}</h2>
 
                         <fieldset className="form-group">
-                            <input type="email" name="email" className={`form-control form-control-lg ${validateFormData.email ? "is-invalid" : ""}`} placeholder={t('registration.email')} onChange={inputHundler} required />
-                            <div className="invalid-feedback">
-                                {emailErrorMessage}
-                            </div>
+                            <input
+                                type="email"
+                                name="email"
+                                className={`form-control form-control-lg ${validateFormData.email ? 'is-invalid' : ''}`}
+                                placeholder={t('registration.email')}
+                                onChange={inputHundler}
+                                required
+                            />
+                            <div className="invalid-feedback">{emailErrorMessage}</div>
                         </fieldset>
 
                         <fieldset className="form-group">
-                            <input type="text" name="name" className={`form-control form-control-lg ${validateFormData.name ? "is-invalid" : ""}`} placeholder={t('registration.name')} onChange={inputHundler} required />
-                            <div className="invalid-feedback">
-                                {t('registration.fillFieldError')}
-                            </div>
+                            <input
+                                type="text"
+                                name="name"
+                                className={`form-control form-control-lg ${validateFormData.name ? 'is-invalid' : ''}`}
+                                placeholder={t('registration.name')}
+                                onChange={inputHundler}
+                                required
+                            />
+                            <div className="invalid-feedback">{t('registration.fillFieldError')}</div>
                         </fieldset>
 
                         <fieldset className="form-group">
-                            <input type="password" name="password" className={`form-control form-control-lg ${validateFormData.password ? "is-invalid" : ""}`} placeholder={t('registration.password')} onChange={inputHundler} />
-                            <div className="invalid-feedback">
-                                {passwordErrorMessage}
-                            </div>
+                            <input
+                                type="password"
+                                name="password"
+                                className={`form-control form-control-lg ${
+                                    validateFormData.password ? 'is-invalid' : ''
+                                }`}
+                                placeholder={t('registration.password')}
+                                onChange={inputHundler}
+                            />
+                            <div className="invalid-feedback">{passwordErrorMessage}</div>
                         </fieldset>
 
                         <fieldset className="form-group">
-                            <input type="password" name="confirmPassword" className={`form-control form-control-lg ${validateFormData.confirmPassword ? "is-invalid" : ""}`} placeholder={t('registration.confirmPassword')} onChange={inputHundler} />
-                            <div className="invalid-feedback">
-                                {passwordErrorMessage}
-                            </div>
+                            <input
+                                type="password"
+                                name="confirmPassword"
+                                className={`form-control form-control-lg ${
+                                    validateFormData.confirmPassword ? 'is-invalid' : ''
+                                }`}
+                                placeholder={t('registration.confirmPassword')}
+                                onChange={inputHundler}
+                            />
+                            <div className="invalid-feedback">{passwordErrorMessage}</div>
                         </fieldset>
 
                         <fieldset className="form-group text-center">
-                            <button type="button" className="btn btn-primary btn-lg form-control" onClick={submitClick}>Зарегистрироваться</button>
+                            <button type="button" className="btn btn-primary btn-lg form-control" onClick={submitClick}>
+                                {t('registration.regisrtNow')}
+                            </button>
                         </fieldset>
                         <p className="text-center">
                             {t('registration.isHasAccount')}
-                            <Link className="mx-1" to="/login">{t('registration.logIn')}</Link>
+                            <Link className="mx-1" to={ROUTES.LOGIN}>
+                                {t('registration.logIn')}
+                            </Link>
                         </p>
                     </form>
                 </div>
             </div>
         </>
-    )
-}
+    );
+};
 
 const mapDispatchToProps = {
-    registr,
+    registr: registrAction,
 };
 
 export default connect(null, mapDispatchToProps)(Registration);

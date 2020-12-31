@@ -1,0 +1,8 @@
+.root {
+    height: 95vh;
+}
+
+.content {
+    max-height: 93vh;
+    overflow-y: auto;
+}

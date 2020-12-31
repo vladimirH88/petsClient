@@ -2,6 +2,6 @@ import axios from 'axios';
 import { User } from '../interfaces';
 import { UPDATE_USER } from '../constants/apiConstants';
 
-export const updateUser = (user: User) => {
-    return axios.put(UPDATE_USER, { user });
-};
+const updateUser = (user: User) => axios.put(UPDATE_USER, { user });
+
+export default updateUser;
